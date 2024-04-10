@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,22 +8,45 @@ import 'package:http/http.dart' as http;
 // ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:universal_io/io.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); // 确保初始化WidgetsBinding
-  if (Platform.isAndroid) requestInternetPermission(); // 请求网络权限
+  if (Platform.isAndroid) {
+    WidgetsFlutterBinding.ensureInitialized();
+    requestInternetPermission();
+  }
   runApp(const MyApp());
 }
 
 Future<void> requestInternetPermission() async {
-  // 请求网络权限
-  var status = await Permission.camera.request();
-  if (!status.isGranted) {
-    // 如果权限未授予，您可以在这里处理，比如显示一个提示并退出应用
-    print('Internet permission not granted');
-    // 退出应用
-    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  const permission = Permission.camera;
+  if (await permission.isDenied) {
+    final result = await permission.request();
+
+    if (result.isGranted) {
+      print("isGranted");
+      // Permission is granted
+    } else if (result.isDenied) {
+      print("isDenied");
+      openSettings();
+      // Permission is denied
+    } else if (result.isPermanentlyDenied) {
+      print("isPermanentlyDenied");
+      // Permission is permanently denied
+    }
   }
+  // 请求网络权限
+  // var status = await Permission.camera.request();
+  // if (!status.isGranted) {
+  //   // 如果权限未授予，您可以在这里处理，比如显示一个提示并退出应用
+  //   print('Camera permission not granted');
+  //   // 退出应用
+  //   SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  // }
+}
+
+void openSettings() {
+  openAppSettings();
 }
 
 class MyApp extends StatelessWidget {
@@ -35,21 +58,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '汉字笔顺查询',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -60,16 +68,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -83,40 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
   late bool _loadingFailed;
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: const Text('汉字查询'),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           children: <Widget>[
             Center(
                 child: Padding(
@@ -151,28 +122,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             )),
             _buildImage(_imageUrl),
-            // ElevatedButton(
-            //   onPressed: () async {
-            //     setState(() {
-            //       _inputText = _textEditingController.text;
-            //     });
-            //     print('Input Text: $_inputText');
-            //     // 按钮点击事件
-            //     final result = showDialog<String>(
-            //         context: context,
-            //         builder: (BuildContext context) => AlertDialog(
-            //               title: const Text('AlertDialog Title'),
-            //               content: Text('输入的文字内容是：$_inputText'),
-            //               actions: <Widget>[
-            //                 TextButton(
-            //                   onPressed: () => Navigator.pop(context, 'Cancel'),
-            //                   child: const Text('OK'),
-            //                 )
-            //               ],
-            //             ));
-            //   },
-            //   child: const Text('Submit'),
-            // ),
           ],
         ),
       ),
@@ -217,7 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onButtonPressed(String text) {
     print('Text field value: $text');
     // 在这里执行你的方法，可以使用文本字段的值
-    _fetchImageUrl(text);
+    // _fetchImageUrl(text);
+    request(text);
   }
 
   Future<void> _fetchImageUrl(String text) async {
@@ -243,5 +193,66 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       throw Exception('Failed to load image');
     }
+  }
+
+  request(String key) async {
+    try {
+      //创建一个HttpClient
+      HttpClient httpClient = HttpClient();
+      //打开Http连接
+      final request = await httpClient.getUrl(Uri.parse(
+          "https://hanyu.baidu.com/s?wd=$key&cf=rcmd&t=img&ptype=zici"));
+      if (request is BrowserHttpClientRequest) {
+        print("browserCredentialsMode");
+        request.browserCredentialsMode = true;
+      }
+      //使用iPhone的UA
+      // request.headers.add(
+      //   "user-agent",
+      //   "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1",
+      // );
+      var headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Accept":
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "en,zh;q=0.9,zh-CN;q=0.8",
+        "Cache-Control": "max-age=0",
+        "Connection": "keep-alive",
+        "Host": "hanyu.baidu.com",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        "sec-ch-ua":
+            "\"Google Chrome\";v=\"123\", \"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"123\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\""
+      };
+
+      headers.forEach((key, value) {
+        request.headers.add(key, value);
+      });
+      //等待连接服务器（会将请求信息发送给服务器）
+      HttpClientResponse response = await request.close();
+      //读取响应内容
+      print(response.statusCode);
+
+      String text = await response.transform(utf8.decoder).join();
+      final document = htmlParser.parse(text);
+      final imageElement = document.getElementById('word_bishun');
+      String? gifUrl = imageElement?.attributes['data-gif'];
+      print(gifUrl);
+      //输出响应头
+      print(response.headers);
+
+      //关闭client后，通过该client发起的所有请求都会终止。
+      httpClient.close();
+    } catch (e) {
+      print("请求失败：$e");
+    } finally {}
   }
 }
