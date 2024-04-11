@@ -73,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _imageUrl;
   @override
   Widget build(BuildContext context) {
-    String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -102,7 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(28.0),
                       child: _buildImage(_imageUrl),
                     ),
-                    // ...str.split('').map((char) => Text(char)).toList(),
                   ],
                 ),
               ),
