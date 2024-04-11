@@ -13,12 +13,13 @@ import 'package:universal_io/io.dart';
 void main() {
   if (Platform.isAndroid) {
     WidgetsFlutterBinding.ensureInitialized();
-    requestInternetPermission();
+    requestPermission();
   }
   runApp(const MyApp());
 }
 
-Future<void> requestInternetPermission() async {
+//请求权限
+Future<void> requestPermission() async {
   const permission = Permission.camera;
   if (await permission.isDenied) {
     final result = await permission.request();
@@ -35,16 +36,9 @@ Future<void> requestInternetPermission() async {
       // Permission is permanently denied
     }
   }
-  // 请求网络权限
-  // var status = await Permission.camera.request();
-  // if (!status.isGranted) {
-  //   // 如果权限未授予，您可以在这里处理，比如显示一个提示并退出应用
-  //   print('Camera permission not granted');
-  //   // 退出应用
-  //   SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-  // }
 }
 
+//打开安的原生设置界面
 void openSettings() {
   openAppSettings();
 }
@@ -76,82 +70,125 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
-  String _imageUrl =
-      'https://hanyu-word-gif.cdn.bcebos.com/b0d9fcfd69c44426ab3626573ac4c62e1.gif';
-  late bool _loadingFailed;
+  String? _imageUrl;
   @override
   Widget build(BuildContext context) {
+    String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('汉字查询'),
-      ),
-      body: Center(
-        child: Column(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text('汉字查询'),
+          leading: Builder(builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.dashboard, color: Colors.white), //自定义图标
+              onPressed: () {
+                // 打开抽屉菜单
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          }),
+        ),
+        body: Column(
           children: <Widget>[
-            Center(
-                child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: TextField(
-                      controller: _textEditingController,
-                      decoration: const InputDecoration(
-                        labelText: '仅能输入一个汉字',
-                        border: OutlineInputBorder(),
-                      ),
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'[\u4e00-\u9fa5]')),
-                      ],
+            Container(height: 10.0),
+            _buildQuery(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Container(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: _buildImage(_imageUrl),
                     ),
-                  ),
-                  const SizedBox(width: 10.0),
-                  Align(
-                      child: TextButton(
-                    onPressed: () {
-                      _onButtonPressed(_textEditingController.text);
-                    },
-                    child: const Text('查询'),
-                  ))
-                ],
+                    // ...str.split('').map((char) => Text(char)).toList(),
+                  ],
+                ),
               ),
-            )),
-            _buildImage(_imageUrl),
+            ),
           ],
         ),
-      ),
+        bottomNavigationBar: Container(
+            height: 48.0,
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.grey, width: 1.0), // 顶部边框样式
+              ),
+            ),
+            child: const BottomAppBar(
+              color: Colors.white,
+              shape: CircularNotchedRectangle(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                      child: IconButton(
+                    icon: Icon(Icons.home),
+                    onPressed: null,
+                  )),
+                  // SizedBox(), //中间位置空出
+                  Expanded(
+                      child: IconButton(
+                    icon: Icon(Icons.business),
+                    onPressed: null,
+                  )),
+                ], //均分底部导航栏横向空间
+              ),
+            )));
+  }
+
+  //查询功能区
+  Widget _buildQuery() {
+    return Flex(
+      direction: Axis.horizontal,
+      children: <Widget>[
+        Expanded(
+          flex: 2,
+          child: Container(
+              margin: const EdgeInsets.only(
+                  left: 8.0, right: 4.0, top: 8.0, bottom: 8.0),
+              height: 50.0,
+              child: TextField(
+                controller: _textEditingController,
+                decoration: const InputDecoration(
+                  labelText: '仅能输入一个汉字',
+                  border: OutlineInputBorder(),
+                ),
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(1),
+                  FilteringTextInputFormatter.allow(RegExp(r'[\u4e00-\u9fa5]')),
+                ],
+              )),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200], // 灰色背景
+                borderRadius: BorderRadius.circular(5), // 圆形边框
+                border: Border.all(color: Colors.grey[400]!), // 灰色边框线
+              ),
+              margin: const EdgeInsets.only(right: 4.0, top: 8.0, bottom: 8.0),
+              height: 50.0,
+              child: TextButton(
+                onPressed: () {
+                  _onButtonPressed(_textEditingController.text);
+                },
+                child: const Text('查询'),
+              )),
+        ),
+      ],
     );
   }
 
+  //加载图片
   Widget _buildImage(imageUrl) {
     try {
-      return Image.network(
-        imageUrl,
-        loadingBuilder: (BuildContext context, Widget child,
-            ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          } else {
-            return const CircularProgressIndicator(); // 加载过程中显示进度指示器
-          }
-        },
-        errorBuilder:
-            (BuildContext context, Object error, StackTrace? stackTrace) {
-          // setState(() {
-          //   _loadingFailed = true; // 设置加载失败标志为true
-          // });
-          return Container(); // 加载失败时返回一个空的容器
-        },
-      );
+      return imageUrl == null
+          ? Container()
+          : Image(image: NetworkImage(imageUrl));
     } catch (e) {
-      setState(() {
-        _loadingFailed = true; // 设置加载失败标志为true
-      });
       return Container(); // 加载失败时返回一个空的容器
     }
   }
@@ -166,8 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onButtonPressed(String text) {
     print('Text field value: $text');
     // 在这里执行你的方法，可以使用文本字段的值
-    // _fetchImageUrl(text);
-    request(text);
+    _fetchImageUrl(text);
+    // request(text);
   }
 
   Future<void> _fetchImageUrl(String text) async {
@@ -195,6 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //httpclient发起请求
   request(String key) async {
     try {
       //创建一个HttpClient
@@ -206,11 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print("browserCredentialsMode");
         request.browserCredentialsMode = true;
       }
-      //使用iPhone的UA
-      // request.headers.add(
-      //   "user-agent",
-      //   "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1",
-      // );
+
       var headers = {
         "Access-Control-Allow-Origin": "*",
         "Accept":
