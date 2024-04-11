@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:chinesestrock/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -53,9 +54,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false, //取消appbar的测试标签
       title: '汉字笔顺查询',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+          bottomAppBarTheme: const BottomAppBarTheme(height: 68.0)),
       home: const MyHomePage(title: '汉字笔顺'),
     );
   }
@@ -72,6 +73,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
   String? _imageUrl;
+  final List<BottomNavigationBarItem> navItems = [
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: '首页',
+    ),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.message_rounded),
+      label: '消息',
+    ),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.people),
+      label: '我的',
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,9 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    Container(height: 10.0),
                     Padding(
-                      padding: const EdgeInsets.all(28.0),
+                      padding: const EdgeInsets.all(15.0),
                       child: _buildImage(_imageUrl),
                     ),
                   ],
@@ -108,33 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-        bottomNavigationBar: Container(
-            height: 48.0,
-            decoration: const BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Colors.grey, width: 1.0), // 顶部边框样式
-              ),
-            ),
-            child: const BottomAppBar(
-              color: Colors.white,
-              shape: CircularNotchedRectangle(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                      child: IconButton(
-                    icon: Icon(Icons.home),
-                    onPressed: null,
-                  )),
-                  // SizedBox(), //中间位置空出
-                  Expanded(
-                      child: IconButton(
-                    icon: Icon(Icons.business),
-                    onPressed: null,
-                  )),
-                ], //均分底部导航栏横向空间
-              ),
-            )));
+        bottomNavigationBar: BottomNavigation(bottomNavItems: navItems));
   }
 
   //查询功能区
@@ -147,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Container(
               margin: const EdgeInsets.only(
                   left: 8.0, right: 4.0, top: 8.0, bottom: 8.0),
-              height: 50.0,
+              height: 40.0,
               child: TextField(
                 controller: _textEditingController,
                 decoration: const InputDecoration(
@@ -169,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 border: Border.all(color: Colors.grey[400]!), // 灰色边框线
               ),
               margin: const EdgeInsets.only(right: 4.0, top: 8.0, bottom: 8.0),
-              height: 50.0,
+              height: 40.0,
               child: TextButton(
                 onPressed: () {
                   _onButtonPressed(_textEditingController.text);
