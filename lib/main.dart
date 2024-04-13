@@ -73,11 +73,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _textEditingController = TextEditingController();
-  String? _imageUrl;
   int currentPage = 0;
   final pages = [
-    const ChildItemPage(title: "首页"),
+    const ChildItemPage(title: "汉字查询"),
     const ChildItemPage(title: "消息"),
     const ChildItemPage(title: "我的")
   ];
@@ -113,13 +111,25 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }),
         ),
-        bottomNavigationBar: BottomNavigation(bottomNavItems: navItems),
+        bottomNavigationBar: BottomNavigation(
+          bottomNavItems: navItems,
+          changePageCallback: _changePage,
+        ),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {},
         //   child: Icon(Icons.add),
         // ),
         // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: pages[currentPage]);
+  }
+
+  void _changePage(int index) {
+    print(index);
+    if (index != currentPage) {
+      setState(() {
+        currentPage = index;
+      });
+    }
   }
 
   // 检查字符是否为汉字（基于Unicode范围）

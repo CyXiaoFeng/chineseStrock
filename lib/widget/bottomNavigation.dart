@@ -1,9 +1,15 @@
 // ignore: file_names
+
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatelessWidget {
   final List<BottomNavigationBarItem> bottomNavItems;
-  const BottomNavigation({super.key, required this.bottomNavItems});
+  // ignore: prefer_typing_uninitialized_variables
+  final void Function(int) changePageCallback;
+  const BottomNavigation(
+      {super.key,
+      required this.bottomNavItems,
+      required this.changePageCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -13,14 +19,17 @@ class BottomNavigation extends StatelessWidget {
       {
         "icon": Icons.home,
         "label": '首页',
+        "index": 0,
       },
       {
         "icon": Icons.message_rounded,
         "label": '消息',
+        "index": 1,
       },
       {
         "icon": Icons.people_alt_rounded,
         "label": '我的',
+        "index": 2,
       }
     ];
 
@@ -40,6 +49,8 @@ class BottomNavigation extends StatelessWidget {
                 child: MyBottomAppBarItem(
                   icon: item['icon'],
                   label: item['label'],
+                  index: item['index'],
+                  callback: changePageCallback,
                 ),
               );
             }).toList(),
@@ -53,100 +64,26 @@ class BottomNavigation extends StatelessWidget {
 class MyBottomAppBarItem extends StatelessWidget {
   final IconData icon;
   final String label;
-
+  final int index;
+  final Function(int) callback;
   const MyBottomAppBarItem({
     super.key,
     required this.icon,
     required this.label,
+    required this.callback,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon),
-        Text(label),
-      ],
-    );
-  }
-}
-
-// import 'page_home.dart';
-// import 'page_business.dart';
-// import 'page_school.dart';
-
-class BottomAppBarDemo extends StatefulWidget {
-  @override
-  _BottomAppBarDemoState createState() => _BottomAppBarDemoState();
-}
-
-class _BottomAppBarDemoState extends State<BottomAppBarDemo> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  // ignore: prefer_final_fields
-  List<Widget> _bottomNavPages = []; // 底部导航栏各个可切换页面组
-
-  @override
-  void initState() {
-    super.initState();
-
-    // _bottomNavPages..add(PageHome('首页'))..add(PageBusiness('商城'))..add(PageSchool('课程'))..add(PageBusiness('搜索'));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _bottomNavPages[_selectedIndex],
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.teal,
-        // ignore: sort_child_properties_last
-        child: Row(
-          // ignore: sort_child_properties_last
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.home,
-                color: Colors.white,
-              ),
-              onPressed: () => _onItemTapped(0),
-            ),
-            IconButton(
-              // ignore: prefer_const_constructors
-              icon: Icon(
-                Icons.business,
-                color: Colors.white,
-              ),
-              onPressed: () => _onItemTapped(1),
-            ),
-            const SizedBox(), // 增加一些间隔
-            IconButton(
-              // ignore: prefer_const_constructors
-              icon: Icon(
-                Icons.school,
-                color: Colors.white,
-              ),
-              onPressed: () => _onItemTapped(3),
-            ),
-            IconButton(
-              // ignore: prefer_const_constructors
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-              onPressed: () => _onItemTapped(2),
-            ),
+    return GestureDetector(
+        onTap: () => callback(index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon),
+            Text(label),
           ],
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-        ),
-        // ignore: prefer_const_constructors
-      ),
-    );
+        ));
   }
 }

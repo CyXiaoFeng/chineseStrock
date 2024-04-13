@@ -16,8 +16,10 @@ class ChildItemPage extends StatefulWidget {
 class _GetChildItemPageState extends State<ChildItemPage> {
   final TextEditingController _textEditingController = TextEditingController();
   String? _imageUrl;
+
   @override
   Widget build(BuildContext context) {
+    print(widget.title);
     return Column(
       children: <Widget>[
         Container(height: 10.0),
