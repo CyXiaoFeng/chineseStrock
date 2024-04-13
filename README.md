@@ -18,7 +18,7 @@ samples, guidance on mobile development, and a full API reference.
 ## 计划实现下述功能
 ### 1. 准备工作
 在开始之前，确保你已经完成了以下准备工作：
-- [ ] 通过百度获取文字的笔顺
+- [x] 通过百度获取文字的笔顺
 - [ ] 确保所有必要的软件已经安装
 - [ ] 准备好所需的材料和文档
 
