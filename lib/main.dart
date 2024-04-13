@@ -11,6 +11,8 @@ import 'package:html/parser.dart' as htmlParser;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:universal_io/io.dart';
 
+import 'pages/ChildItemPage.dart';
+
 void main() {
   if (Platform.isAndroid) {
     WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +75,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textEditingController = TextEditingController();
   String? _imageUrl;
+  int currentPage = 0;
+  final pages = [
+    const ChildItemPage(title: "首页"),
+    const ChildItemPage(title: "消息"),
+    const ChildItemPage(title: "我的")
+  ];
+
   final List<BottomNavigationBarItem> navItems = [
     const BottomNavigationBarItem(
       icon: Icon(Icons.home),
@@ -104,80 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }),
         ),
-        body: Column(
-          children: <Widget>[
-            Container(height: 10.0),
-            _buildQuery(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: _buildImage(_imageUrl),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigation(bottomNavItems: navItems));
-  }
-
-  //查询功能区
-  Widget _buildQuery() {
-    return Flex(
-      direction: Axis.horizontal,
-      children: <Widget>[
-        Expanded(
-          flex: 2,
-          child: Container(
-              margin: const EdgeInsets.only(
-                  left: 8.0, right: 4.0, top: 8.0, bottom: 8.0),
-              height: 40.0,
-              child: TextField(
-                controller: _textEditingController,
-                decoration: const InputDecoration(
-                  labelText: '仅能输入一个汉字',
-                  border: OutlineInputBorder(),
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(1),
-                  FilteringTextInputFormatter.allow(RegExp(r'[\u4e00-\u9fa5]')),
-                ],
-              )),
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200], // 灰色背景
-                borderRadius: BorderRadius.circular(5), // 圆形边框
-                border: Border.all(color: Colors.grey[400]!), // 灰色边框线
-              ),
-              margin: const EdgeInsets.only(right: 4.0, top: 8.0, bottom: 8.0),
-              height: 40.0,
-              child: TextButton(
-                onPressed: () {
-                  _onButtonPressed(_textEditingController.text);
-                },
-                child: const Text('查询'),
-              )),
-        ),
-      ],
-    );
-  }
-
-  //加载图片
-  Widget _buildImage(imageUrl) {
-    try {
-      return imageUrl == null
-          ? Container()
-          : Image(image: NetworkImage(imageUrl));
-    } catch (e) {
-      return Container(); // 加载失败时返回一个空的容器
-    }
+        bottomNavigationBar: BottomNavigation(bottomNavItems: navItems),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {},
+        //   child: Icon(Icons.add),
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        body: pages[currentPage]);
   }
 
   // 检查字符是否为汉字（基于Unicode范围）
@@ -185,38 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (text.isEmpty) return false;
     String pattern = r'[\u4e00-\u9fa5]';
     return RegExp(pattern).hasMatch(text);
-  }
-
-  void _onButtonPressed(String text) {
-    print('Text field value: $text');
-    // 在这里执行你的方法，可以使用文本字段的值
-    _fetchImageUrl(text);
-    // request(text);
-  }
-
-  Future<void> _fetchImageUrl(String text) async {
-    String queryUrl =
-        'https://hanyu.baidu.com/s?wd=$text&cf=rcmd&t=img&ptype=zici';
-    print(queryUrl);
-    final response = await http.get(Uri.parse(queryUrl));
-    if (response.statusCode == 200) {
-      final document = htmlParser.parse(response.body);
-      final imageElement =
-          document.getElementById('word_bishun'); // 根据实际情况选择相应的选择器
-
-      if (imageElement != null) {
-        // imageElement.attributes.forEach((key, value) {
-        //   print('$key: $value');
-        // });
-        String? gifUrl = imageElement.attributes['data-gif'];
-        // print(gifUrl);
-        setState(() {
-          _imageUrl = gifUrl!;
-        });
-      }
-    } else {
-      throw Exception('Failed to load image');
-    }
   }
 
   //httpclient发起请求
