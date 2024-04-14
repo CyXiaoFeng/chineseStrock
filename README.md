@@ -1,4 +1,4 @@
-# chinesestrock
+# 汉字笔顺查询
 
 A new Flutter project.
 
@@ -14,3 +14,15 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## 计划实现下述功能
+### 1. 准备工作
+在开始之前，确保你已经完成了以下准备工作：
+- [x] 通过百度获取文字的笔顺
+- [ ] 确保所有必要的软件已经安装
+- [ ] 准备好所需的材料和文档
+
+### 2. 计划功能
+接下来，执行以下任务：
+1. 查字功能实现
+2. 扫描汉字，认识汉字
