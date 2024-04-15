@@ -2,10 +2,8 @@
 
 import 'dart:convert';
 
-import 'package:chinesestrock/widget/bottomNavigation.dart';
+import 'package:chinesestrock/widget/BottomNavigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 // ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 import 'package:permission_handler/permission_handler.dart';
@@ -53,12 +51,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, //取消appbar的测试标签
+      debugShowCheckedModeBanner: false, //不显示appbar的测试标签
       title: '汉字笔顺查询',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
-          bottomAppBarTheme: const BottomAppBarTheme(height: 68.0)),
+          bottomAppBarTheme: const BottomAppBarTheme()),
       home: const MyHomePage(title: '汉字笔顺'),
     );
   }
@@ -79,6 +77,13 @@ class _MyHomePageState extends State<MyHomePage> {
     const ChildItemPage(title: "消息"),
     const ChildItemPage(title: "我的")
   ];
+  BottomNavigation? bnav;
+
+  @override
+  void initState() {
+    super.initState();
+    bnav = getNav();
+  }
 
   final List<BottomNavigationBarItem> navItems = [
     const BottomNavigationBarItem(
@@ -90,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       label: '消息',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.people),
+      icon: Icon(Icons.people_alt_rounded),
       label: '我的',
     ),
   ];
@@ -111,10 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
             );
           }),
         ),
-        bottomNavigationBar: BottomNavigation(
-          bottomNavItems: navItems,
-          changePageCallback: _changePage,
-        ),
+        bottomNavigationBar: getNav(),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {},
         //   child: Icon(Icons.add),
@@ -123,11 +125,19 @@ class _MyHomePageState extends State<MyHomePage> {
         body: pages[currentPage]);
   }
 
-  void _changePage(int index) {
-    print(index);
+  BottomNavigation getNav() {
+    return BottomNavigation(
+      bottomNavItems: navItems,
+      changePageCallback: _changePage,
+    );
+  }
+
+  void _changePage(int index, Widget? widget) {
+    // print((widget as MyBottomAppBarItem).index);
     if (index != currentPage) {
       setState(() {
         currentPage = index;
+        // bnav?.changTab(currentPage);
       });
     }
   }

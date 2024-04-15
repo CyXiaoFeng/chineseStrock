@@ -19,7 +19,7 @@ class _GetChildItemPageState extends State<ChildItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.title);
+    // print(widget.title);
     return Column(
       children: <Widget>[
         Container(height: 10.0),
