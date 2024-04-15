@@ -14,8 +14,19 @@ class ChildItemPage extends StatefulWidget {
 }
 
 class _GetChildItemPageState extends State<ChildItemPage> {
-  final TextEditingController _textEditingController = TextEditingController();
   String? _imageUrl;
+  final TextEditingController _textEditingController = TextEditingController();
+  bool _showClearButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController.addListener(() {
+      setState(() {
+        _showClearButton = _textEditingController.text.isNotEmpty;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +63,39 @@ class _GetChildItemPageState extends State<ChildItemPage> {
               height: 40.0,
               child: TextField(
                 controller: _textEditingController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: '仅能输入一个汉字',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: _showClearButton
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20.0),
+                            onTap: () {
+                              setState(() {
+                                _textEditingController.clear();
+                                _showClearButton = false;
+                                _imageUrl = null;
+                              });
+                            },
+                            child: Container(
+                              width: 35.0,
+                              height: 35.0,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey,
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.clear, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        )
+                      : null,
+                  suffixIconConstraints: const BoxConstraints(
+                    minWidth: 24,
+                    minHeight: 24,
+                  ),
                 ),
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(1),
