@@ -9,7 +9,8 @@ import 'package:html/parser.dart' as htmlParser;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:universal_io/io.dart';
 
-import 'pages/ChildItemPage.dart';
+import 'pages/StrockQueryPage.dart';
+import 'pages/WordScanPage.dart';
 
 void main() {
   if (Platform.isAndroid) {
@@ -73,9 +74,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentPage = 0;
   final pages = [
-    const ChildItemPage(title: "汉字查询"),
-    const ChildItemPage(title: "消息"),
-    const ChildItemPage(title: "我的")
+    const StrockQueryPage(title: "笔顺查询"),
+    const WordScanPage(title: "文字扫描"),
+    const StrockQueryPage(title: "我的")
   ];
   BottomNavigation? bnav;
 
@@ -87,12 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<BottomNavigationBarItem> navItems = [
     const BottomNavigationBarItem(
-      icon: Icon(Icons.home),
-      label: '首页',
+      icon: Icon(Icons.image_search),
+      label: '笔顺查询',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.message_rounded),
-      label: '消息',
+      icon: Icon(Icons.scanner),
+      label: '文字扫描',
     ),
     const BottomNavigationBarItem(
       icon: Icon(Icons.people_alt_rounded),
@@ -102,20 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('汉字查询'),
-          leading: Builder(builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.dashboard, color: Colors.white), //自定义图标
-              onPressed: () {
-                // 打开抽屉菜单
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          }),
-        ),
         bottomNavigationBar: getNav(),
         // floatingActionButton: FloatingActionButton(
         //   onPressed: () {},

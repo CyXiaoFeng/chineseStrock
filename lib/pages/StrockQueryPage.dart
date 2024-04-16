@@ -5,15 +5,15 @@ import 'package:http/http.dart' as http;
 // ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 
-class ChildItemPage extends StatefulWidget {
+class StrockQueryPage extends StatefulWidget {
   final String title;
-  const ChildItemPage({super.key, required this.title});
+  const StrockQueryPage({super.key, required this.title});
 
   @override
   State<StatefulWidget> createState() => _GetChildItemPageState();
 }
 
-class _GetChildItemPageState extends State<ChildItemPage> {
+class _GetChildItemPageState extends State<StrockQueryPage> {
   String? _imageUrl;
   final TextEditingController _textEditingController = TextEditingController();
   bool _showClearButton = false;
@@ -31,23 +31,37 @@ class _GetChildItemPageState extends State<ChildItemPage> {
   @override
   Widget build(BuildContext context) {
     // print(widget.title);
-    return Column(
-      children: <Widget>[
-        Container(height: 10.0),
-        _buildQuery(),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: _buildImage(_imageUrl),
-                ),
-              ],
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+        leading: Builder(builder: (context) {
+          return IconButton(
+            icon: const Icon(Icons.dashboard, color: Colors.white), //自定义图标
+            onPressed: () {
+              // 打开抽屉菜单
+              Scaffold.of(context).openDrawer();
+            },
+          );
+        }),
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(height: 10.0),
+          _buildQuery(),
+          Expanded(
+            child: Scrollbar(
+                child: Container(
+                    color: Colors.amber,
+                    width: MediaQuery.of(context).size.width,
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Center(child: _buildImage(_imageUrl)),
+                    ))),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
