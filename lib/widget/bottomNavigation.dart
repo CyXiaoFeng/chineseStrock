@@ -42,29 +42,33 @@ class _BottomNavigationState extends State<BottomNavigation> {
       });
     }
     return Container(
+        height: 50.0,
         decoration: const BoxDecoration(
           border: Border(
             top: BorderSide(color: Colors.grey, width: 1.0),
           ),
         ),
-        child: BottomAppBar(
-          color: Colors.white,
-          shape: const CircularNotchedRectangle(),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: bbi.map((item) {
-              return Expanded(
-                child: MyBottomAppBarItem(
-                  icon: item['icon'],
-                  label: item['label'],
-                  index: item['index'],
-                  callback: updateState,
-                  isSelected: item['index'] == selectedIndex,
-                ),
-              );
-            }).toList(),
-          ),
-        ));
+        child: Align(
+            alignment: Alignment.bottomCenter,
+            child: BottomAppBar(
+              padding: const EdgeInsets.all(0.0),
+              height: 50.0,
+              // color: Colors.blue,
+              shape: const CircularNotchedRectangle(),
+              child: Row(
+                children: bbi.map((item) {
+                  return Expanded(
+                    child: MyBottomAppBarItem(
+                      icon: item['icon'],
+                      label: item['label'],
+                      index: item['index'],
+                      callback: updateState,
+                      isSelected: item['index'] == selectedIndex,
+                    ),
+                  );
+                }).toList(),
+              ),
+            )));
   }
 }
 
@@ -86,19 +90,24 @@ class MyBottomAppBarItem extends StatelessWidget {
 
   Widget buildItem() {
     return GestureDetector(
-        child: InkWell(
-      onTap: () => {
-        callback(index),
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon),
-          Text(label,
-              style: TextStyle(color: isSelected ? Colors.red : Colors.black)),
-        ],
-      ),
-    ));
+      child: InkWell(
+          borderRadius: BorderRadius.circular(50.0),
+          onTap: () => {
+                callback(index),
+              },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(icon),
+              Text(
+                  textAlign: TextAlign.center,
+                  label,
+                  style:
+                      TextStyle(color: isSelected ? Colors.red : Colors.black)),
+            ],
+          )),
+    );
   }
 
   @override

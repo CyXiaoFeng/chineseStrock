@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
       label: '文字扫描',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.people_alt_rounded),
+      icon: Icon(Icons.person),
       label: '我的',
     ),
   ];
@@ -124,7 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (index != currentPage) {
       setState(() {
         currentPage = index;
-        // bnav?.changTab(currentPage);
       });
     }
   }

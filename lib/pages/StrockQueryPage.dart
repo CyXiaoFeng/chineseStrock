@@ -48,7 +48,6 @@ class _GetChildItemPageState extends State<StrockQueryPage> {
       ),
       body: Column(
         children: <Widget>[
-          Container(height: 10.0),
           _buildQuery(),
           Expanded(
             child: Scrollbar(
