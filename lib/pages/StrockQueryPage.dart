@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+// ignore: depend_on_referenced_packages
+
 // ignore: library_prefixes
 import 'package:html/parser.dart' as htmlParser;
 
@@ -36,6 +38,12 @@ class _GetChildItemPageState extends State<StrockQueryPage> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: <Widget>[
+          //导航栏右侧菜单
+          IconButton(
+              icon: const Icon(Icons.document_scanner), onPressed: () {}),
+          Container(margin: const EdgeInsets.only(right: 5.0))
+        ],
         leading: Builder(builder: (context) {
           return IconButton(
             icon: const Icon(Icons.dashboard, color: Colors.white), //自定义图标
