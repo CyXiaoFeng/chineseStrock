@@ -1,4 +1,7 @@
 // ignore: file_names
+import 'package:camera/camera.dart';
+import 'package:chinesestrock/pages/OCRExample.dart';
+import 'package:chinesestrock/pages/OCRScanPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +44,20 @@ class _GetChildItemPageState extends State<StrockQueryPage> {
         actions: <Widget>[
           //导航栏右侧菜单
           IconButton(
-              icon: const Icon(Icons.document_scanner), onPressed: () {}),
+              icon: const Icon(Icons.document_scanner),
+              onPressed: () async {
+                final cameras = await availableCameras();
+                final firstCamera = cameras.first;
+                Navigator.push(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OCRScanPage(
+                      camera: firstCamera,
+                    ),
+                  ),
+                );
+              }),
           Container(margin: const EdgeInsets.only(right: 5.0))
         ],
         leading: Builder(builder: (context) {

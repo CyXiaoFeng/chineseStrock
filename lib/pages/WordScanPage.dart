@@ -1,8 +1,8 @@
 // ignore: file_names
 import 'dart:async';
 
+import 'package:chinesestrock/utils/TextORCScan.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ocr_text_recognization/flutter_ocr_text_recognization.dart';
 
 class WordScanPage extends StatefulWidget {
   final String title;
@@ -84,6 +84,9 @@ class ScanResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("识别结果 : $text");
+    return Container(
+        padding: const EdgeInsets.only(left: 10.0),
+        child: Align(
+            alignment: Alignment.bottomLeft, child: Text("识别结果 : $text")));
   }
 }
